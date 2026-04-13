@@ -119,6 +119,7 @@ export default {
         "slide-in-right": "slide-in-right 0.3s ease-out",
         "glow-pulse": "glow-pulse 3s ease-in-out infinite",
         "float": "float 4s ease-in-out infinite",
+        "hero-drift": "hero-drift 12s ease-in-out infinite",
       },
     },
   },

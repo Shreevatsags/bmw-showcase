@@ -104,6 +104,11 @@ export default {
           "0%, 100%": { transform: "translateY(0)" },
           "50%": { transform: "translateY(-8px)" },
         },
+        "hero-drift": {
+          "0%": { transform: "scale(1.05) translateX(0%)" },
+          "50%": { transform: "scale(1.08) translateX(-1.5%)" },
+          "100%": { transform: "scale(1.05) translateX(0%)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -114,6 +119,7 @@ export default {
         "slide-in-right": "slide-in-right 0.3s ease-out",
         "glow-pulse": "glow-pulse 3s ease-in-out infinite",
         "float": "float 4s ease-in-out infinite",
+        "hero-drift": "hero-drift 12s ease-in-out infinite",
       },
     },
   },

@@ -13,7 +13,6 @@ const BMWHero = () => {
           className="w-full h-full object-cover object-center animate-hero-drift"
         />
       </div>
-      />
       <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
 
       {/* Animated glow accent */}

@@ -4,12 +4,15 @@ import { Button } from "@/components/ui/button";
 const BMWHero = () => {
   return (
     <section className="relative min-h-screen flex items-end pb-20 overflow-hidden">
-      <img
-        src={heroImage}
-        alt="BMW luxury sedan in dramatic studio lighting"
-        width={1920}
-        height={1080}
-        className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-[2s] hover:scale-105"
+      <div className="absolute inset-0 overflow-hidden">
+        <img
+          src={heroImage}
+          alt="BMW luxury sedan in dramatic studio lighting"
+          width={1920}
+          height={1080}
+          className="w-full h-full object-cover object-center animate-hero-drift"
+        />
+      </div>
       />
       <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
 

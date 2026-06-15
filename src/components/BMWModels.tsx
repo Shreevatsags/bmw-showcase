@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import suvImage from "@/assets/bmw-suv.jpg";
 import coupeImage from "@/assets/bmw-coupe.jpg";
 import electricImage from "@/assets/bmw-electric.jpg";
@@ -5,18 +6,21 @@ import ScrollReveal from "@/components/ScrollReveal";
 
 const models = [
   {
+    id: "x5",
     name: "BMW X5",
     category: "Sports Activity Vehicle",
     image: suvImage,
     price: "From $65,200",
   },
   {
+    id: "m4",
     name: "BMW M4",
     category: "Performance Coupé",
     image: coupeImage,
-    price: "From $74,700",
+    price: "From $84,100",
   },
   {
+    id: "i5",
     name: "BMW i5",
     category: "Electric Sedan",
     image: electricImage,
@@ -42,8 +46,11 @@ const BMWModels = () => {
 
         <div className="grid md:grid-cols-3 gap-6">
           {models.map((model, i) => (
-            <ScrollReveal key={model.name} delay={i * 150}>
-              <div className="group relative bg-card rounded-lg overflow-hidden border border-border hover:border-bmw-blue/40 transition-all duration-500 hover:glow-blue hover:-translate-y-1">
+            <ScrollReveal key={model.id} delay={i * 150}>
+              <Link
+                to={`/models/${model.id}`}
+                className="group relative block bg-card rounded-lg overflow-hidden border border-border hover:border-bmw-blue/40 transition-all duration-500 hover:glow-blue hover:-translate-y-1"
+              >
                 <div className="aspect-[4/3] overflow-hidden">
                   <img
                     src={model.image}
@@ -53,7 +60,6 @@ const BMWModels = () => {
                     height={600}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                   />
-                  {/* Blue overlay on hover */}
                   <div className="absolute inset-0 bg-bmw-blue/0 group-hover:bg-bmw-blue/10 transition-colors duration-500" />
                 </div>
                 <div className="p-6">
@@ -65,9 +71,18 @@ const BMWModels = () => {
                   </h3>
                   <p className="text-sm text-bmw-blue font-medium">{model.price}</p>
                 </div>
-              </div>
+              </Link>
             </ScrollReveal>
           ))}
+        </div>
+
+        <div className="mt-12 text-center">
+          <Link
+            to="/models"
+            className="inline-flex items-center px-6 py-3 border border-bmw-blue/40 text-bmw-blue rounded-md font-medium hover:bg-bmw-blue hover:text-primary-foreground transition-colors"
+          >
+            View all models
+          </Link>
         </div>
       </div>
     </section>

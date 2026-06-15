@@ -120,6 +120,56 @@ const CarDetail = () => {
                 </div>
               </div>
 
+              {/* Paint customizer */}
+              <div className="mb-8 p-5 bg-card border border-border rounded-lg">
+                <div className="flex items-center justify-between mb-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                    Exterior Paint
+                  </p>
+                  <p className="text-sm font-medium">
+                    {PAINT_OPTIONS.find((p) => p.hex.toLowerCase() === bodyColor.toLowerCase())?.name ?? "Custom"}
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {PAINT_OPTIONS.map((p) => {
+                    const active = p.hex.toLowerCase() === bodyColor.toLowerCase();
+                    return (
+                      <button
+                        key={p.hex}
+                        onClick={() => setBodyColor(p.hex)}
+                        title={p.name}
+                        aria-label={p.name}
+                        className={`relative w-9 h-9 rounded-full border-2 transition-all ${
+                          active ? "border-bmw-blue scale-110 glow-blue" : "border-border hover:scale-105"
+                        }`}
+                        style={{ backgroundColor: p.hex }}
+                      >
+                        {active && (
+                          <Check
+                            size={16}
+                            className="absolute inset-0 m-auto"
+                            style={{
+                              color: ["#f5f5f5", "#facc15"].includes(p.hex) ? "#000" : "#fff",
+                            }}
+                          />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+                <label className="flex items-center gap-3 text-xs text-muted-foreground">
+                  <span>Custom color:</span>
+                  <input
+                    type="color"
+                    value={bodyColor}
+                    onChange={(e) => setBodyColor(e.target.value)}
+                    className="w-8 h-8 rounded cursor-pointer bg-transparent border border-border"
+                  />
+                  <span className="font-mono uppercase">{bodyColor}</span>
+                </label>
+              </div>
+
+
               <div className="flex flex-wrap gap-3">
                 <button className="px-6 py-3 bg-bmw-blue text-primary-foreground rounded-md font-medium hover:opacity-90 transition glow-blue">
                   Build Yours

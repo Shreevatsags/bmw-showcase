@@ -1,4 +1,5 @@
 import { Link, useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { ArrowLeft, Gauge, Zap, Timer, Users, Cog, Wrench, Check } from "lucide-react";
 import BMWHeader from "@/components/BMWHeader";
 import BMWFooter from "@/components/BMWFooter";
@@ -9,9 +10,31 @@ import { getCar, cars } from "@/data/cars";
 const formatPrice = (n: number) =>
   new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
 
+const PAINT_OPTIONS = [
+  { name: "Alpine White", hex: "#f5f5f5" },
+  { name: "Jet Black", hex: "#0b0b0d" },
+  { name: "Mineral Grey", hex: "#4b5563" },
+  { name: "Storm Bay", hex: "#1e3a8a" },
+  { name: "Estoril Blue", hex: "#1d4ed8" },
+  { name: "Sky Cyan", hex: "#22d3ee" },
+  { name: "Toronto Red", hex: "#dc2626" },
+  { name: "São Paulo Yellow", hex: "#facc15" },
+  { name: "Frozen Green", hex: "#16a34a" },
+  { name: "Tanzanite Violet", hex: "#7c3aed" },
+];
+
 const CarDetail = () => {
   const { id } = useParams<{ id: string }>();
   const car = id ? getCar(id) : undefined;
+
+  const [bodyColor, setBodyColor] = useState(car?.bodyColor ?? "#1f2937");
+  const [autoRotate, setAutoRotate] = useState(true);
+
+  // Reset color when navigating between cars
+  useEffect(() => {
+    if (car) setBodyColor(car.bodyColor);
+  }, [car?.id]);
+
 
   if (!car) {
     return (
@@ -58,11 +81,18 @@ const CarDetail = () => {
           <div className="grid lg:grid-cols-2 gap-8 items-center mb-20">
             <div className="relative h-[420px] md:h-[520px] rounded-xl overflow-hidden border border-border bg-gradient-to-b from-card to-background">
               <Car3D
-                bodyColor={car.bodyColor}
+                bodyColor={bodyColor}
                 accentColor={car.accentColor}
                 bodyType={car.bodyType}
+                autoRotate={autoRotate}
                 className="absolute inset-0"
               />
+              <button
+                onClick={() => setAutoRotate((v) => !v)}
+                className="absolute top-3 right-3 bg-background/70 backdrop-blur-md border border-border text-xs uppercase tracking-wider px-3 py-1.5 rounded hover:border-bmw-blue/60 transition-colors"
+              >
+                {autoRotate ? "Pause" : "Rotate"}
+              </button>
               <div className="absolute bottom-3 left-3 right-3 flex justify-between text-[10px] uppercase tracking-widest text-muted-foreground pointer-events-none">
                 <span>Interactive 3D · drag to rotate · scroll to zoom</span>
                 <span>{car.bodyType}</span>

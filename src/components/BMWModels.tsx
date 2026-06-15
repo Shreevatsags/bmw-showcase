@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import suvImage from "@/assets/bmw-suv.jpg";
 import coupeImage from "@/assets/bmw-coupe.jpg";
 import electricImage from "@/assets/bmw-electric.jpg";

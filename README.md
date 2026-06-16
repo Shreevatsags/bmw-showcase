@@ -1,25 +1,17 @@
 # BMW Showcase 🚘
 
-A premium BMW-inspired showcase website built to highlight the elegance, performance, and innovation of BMW vehicles through a modern and responsive user experience.
+A modern BMW-inspired showcase website built with React, TypeScript, Tailwind CSS, and Shadcn UI. The project highlights BMW's luxury, performance, and innovation through immersive visuals, smooth animations, and a responsive user experience.
 
-## 🌟 Overview
+## 🔥 Features
 
-BMW Showcase is a visually engaging web application that presents BMW's iconic lineup with stunning imagery, vehicle details, and immersive user interactions.
-
-The project focuses on delivering a luxury automotive browsing experience while demonstrating modern frontend development practices.
-
----
-
-## ✨ Features
-
-* 🚗 BMW vehicle showcase
-* 🎨 Modern and premium UI design
-* 📱 Fully responsive layout
-* ⚡ Fast loading performance
-* 🖼 High-quality vehicle galleries
-* 🔍 Detailed car information sections
-* 🌙 Smooth animations and transitions
-* 💻 Cross-device compatibility
+* Premium BMW-themed user interface
+* Interactive hero section with animations
+* Responsive design for desktop, tablet, and mobile
+* Featured BMW vehicle collection
+* Smooth scrolling and transitions
+* Optimized image assets
+* Modern component-based architecture
+* Fast performance powered by Vite
 
 ---
 
@@ -30,63 +22,40 @@ The project focuses on delivering a luxury automotive browsing experience while 
 * React
 * TypeScript
 * Vite
+
+### Styling
+
 * Tailwind CSS
-
-### UI & Styling
-
-* Modern responsive design
-* Custom animations
-* Interactive components
+* Shadcn UI
+* Custom CSS Animations
 
 ### Development Tools
 
+* Bun
 * ESLint
-* Prettier
 * Git & GitHub
-
----
-
-## 📸 Website Sections
-
-### Home
-
-A visually appealing hero section featuring BMW's premium branding and flagship vehicles.
-
-### Featured Models
-
-Explore selected BMW models with specifications and highlights.
-
-### Vehicle Gallery
-
-Browse high-quality images showcasing BMW design and engineering.
-
-### Performance Highlights
-
-Discover BMW's performance-focused technologies and innovations.
-
-### About BMW
-
-Learn about the brand's heritage, luxury, and commitment to driving excellence.
-
-### Contact
-
-Simple contact section for user engagement and inquiries.
 
 ---
 
 ## 📂 Project Structure
 
-```text
+```bash
 bmw-showcase/
+│
 ├── public/
+│   ├── images/
+│   └── assets/
+│
 ├── src/
 │   ├── components/
 │   ├── pages/
-│   ├── assets/
 │   ├── hooks/
-│   └── utils/
+│   ├── lib/
+│   ├── assets/
+│   └── App.tsx
 │
 ├── package.json
+├── tailwind.config.ts
 ├── vite.config.ts
 └── README.md
 ```
@@ -95,13 +64,7 @@ bmw-showcase/
 
 ## 🚀 Getting Started
 
-### Prerequisites
-
-* Node.js 18+
-* npm or Bun
-* Git
-
-### Clone the Repository
+### Clone Repository
 
 ```bash
 git clone https://github.com/Shreevatsags/bmw-showcase.git
@@ -110,17 +73,19 @@ cd bmw-showcase
 
 ### Install Dependencies
 
+Using npm:
+
 ```bash
 npm install
 ```
 
-or
+Using Bun:
 
 ```bash
 bun install
 ```
 
-### Start Development Server
+### Run Development Server
 
 ```bash
 npm run dev
@@ -132,7 +97,7 @@ or
 bun run dev
 ```
 
-Visit:
+Open:
 
 ```text
 http://localhost:5173
@@ -140,12 +105,56 @@ http://localhost:5173
 
 ---
 
+## 🎯 Project Highlights
+
+### Luxury Design Language
+
+The website follows BMW's premium branding philosophy with clean layouts, bold typography, and high-quality imagery.
+
+### Performance-Oriented UI
+
+Built using modern React architecture and Vite for a fast and smooth browsing experience.
+
+### Responsive Experience
+
+Designed to provide seamless interaction across all screen sizes.
+
+### Animated Hero Section
+
+Custom hero animations create an engaging first impression inspired by BMW's performance-focused identity.
+
+---
+
+## 📸 Screenshots
+
+Add screenshots inside:
+
+```text
+/public/screenshots/
+```
+
+Then include:
+
+```md
+## Home Page
+
+![Home](public/screenshots/home.png)
+
+## Featured Models
+
+![Models](public/screenshots/models.png)
+
+## Hero Section
+
+![Hero](public/screenshots/hero.png)
+```
+
+---
+
 ## 🏎 Featured BMW Models
 
-The website showcases some of BMW's most iconic vehicles, including:
-
 * BMW M4 Competition
-* BMW M5
+* BMW M5 CS
 * BMW i7
 * BMW XM
 * BMW X5
@@ -153,60 +162,34 @@ The website showcases some of BMW's most iconic vehicles, including:
 
 ---
 
-## 🎯 Project Goals
+## 📈 Future Improvements
 
-* Build a premium automotive user experience
-* Practice modern React development
-* Showcase responsive web design skills
-* Create a visually impressive portfolio project
-* Demonstrate component-based architecture
-
----
-
-## 📈 Future Enhancements
-
-* [ ] BMW model comparison tool
-* [ ] Advanced vehicle filtering
-* [ ] Dark / Light theme switcher
-* [ ] BMW dealership locator
-* [ ] Favorites & wishlist functionality
-* [ ] 360° vehicle viewer
-* [ ] Performance specifications dashboard
+* [ ] BMW Model Comparison Tool
+* [ ] Vehicle Search & Filters
+* [ ] Dark Mode Support
+* [ ] 360° Car Viewer
+* [ ] BMW Dealer Locator
+* [ ] Vehicle Specification Dashboard
+* [ ] Favorite Cars Feature
 
 ---
 
-## 🤝 Contributing
+## 🎓 What I Learned
 
-Contributions are welcome.
-
-1. Fork the repository
-2. Create a new branch
-
-```bash
-git checkout -b feature/new-feature
-```
-
-3. Commit changes
-
-```bash
-git commit -m "Add new feature"
-```
-
-4. Push to GitHub
-
-```bash
-git push origin feature/new-feature
-```
-
-5. Open a Pull Request
+* Building scalable React applications
+* Creating reusable UI components
+* Implementing responsive layouts
+* Optimizing frontend performance
+* Managing project structure with TypeScript
+* Using Tailwind CSS for rapid UI development
 
 ---
 
-## 📄 Disclaimer
+## ⚠️ Disclaimer
 
-This project is created for educational and portfolio purposes only.
+This project is developed for educational and portfolio purposes only.
 
-BMW, the BMW logo, and all related trademarks are the property of Bayerische Motoren Werke AG (BMW). This project is not affiliated with or endorsed by BMW.
+BMW and all associated trademarks, logos, and vehicle names belong to Bayerische Motoren Werke AG (BMW). This project is not affiliated with, endorsed by, or sponsored by BMW.
 
 ---
 
@@ -216,4 +199,4 @@ BMW, the BMW logo, and all related trademarks are the property of Bayerische Mot
 
 GitHub: https://github.com/Shreevatsags
 
-Built with ❤️ for automotive enthusiasts.
+*"The Ultimate Driving Machine, Reimagined on the Web."*

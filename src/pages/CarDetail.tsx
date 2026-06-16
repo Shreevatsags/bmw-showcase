@@ -1,11 +1,21 @@
-import { Link, useParams } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { ArrowLeft, Gauge, Zap, Timer, Users, Cog, Wrench, Check } from "lucide-react";
+import { Link, useParams, useLocation, useNavigate } from "react-router-dom";
+import { useState, useEffect, useMemo } from "react";
+import { ArrowLeft, Gauge, Zap, Timer, Users, Cog, Wrench, Check, Share2 } from "lucide-react";
 import BMWHeader from "@/components/BMWHeader";
 import BMWFooter from "@/components/BMWFooter";
 import Car3D from "@/components/Car3D";
 import ScrollReveal from "@/components/ScrollReveal";
+import CarThumb from "@/components/CarThumb";
 import { getCar, cars } from "@/data/cars";
+import {
+  customizationFromSearch,
+  customizationToQuery,
+  getCustomization,
+  saveCustomization,
+  type Finish,
+  type Flake,
+} from "@/lib/carCustomization";
+import { toast } from "@/hooks/use-toast";
 
 const formatPrice = (n: number) =>
   new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
@@ -23,18 +33,60 @@ const PAINT_OPTIONS = [
   { name: "Tanzanite Violet", hex: "#7c3aed" },
 ];
 
+const FINISH_OPTIONS: { value: Finish; label: string; hint: string }[] = [
+  { value: "gloss", label: "Gloss", hint: "Mirror-bright clearcoat" },
+  { value: "matte", label: "Matte", hint: "Soft, non-reflective" },
+];
+
+const FLAKE_OPTIONS: { value: Flake; label: string; hint: string }[] = [
+  { value: "metal", label: "Metallic", hint: "Deep metallic flake" },
+  { value: "pearl", label: "Pearl", hint: "Iridescent shimmer" },
+];
+
 const CarDetail = () => {
   const { id } = useParams<{ id: string }>();
+  const location = useLocation();
+  const navigate = useNavigate();
   const car = id ? getCar(id) : undefined;
 
-  const [bodyColor, setBodyColor] = useState(car?.bodyColor ?? "#1f2937");
-  const [autoRotate, setAutoRotate] = useState(true);
-
-  // Reset color when navigating between cars
-  useEffect(() => {
-    if (car) setBodyColor(car.bodyColor);
+  // Resolve initial customization: URL > localStorage > car default.
+  const initial = useMemo(() => {
+    if (!car) return null;
+    const fromUrl = customizationFromSearch(location.search);
+    const fromStore = getCustomization(car.id);
+    return {
+      color: fromUrl.color ?? fromStore?.color ?? car.bodyColor,
+      finish: fromUrl.finish ?? fromStore?.finish ?? ("gloss" as Finish),
+      flake: fromUrl.flake ?? fromStore?.flake ?? ("metal" as Flake),
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [car?.id]);
 
+  const [bodyColor, setBodyColor] = useState(initial?.color ?? "#1f2937");
+  const [finish, setFinish] = useState<Finish>(initial?.finish ?? "gloss");
+  const [flake, setFlake] = useState<Flake>(initial?.flake ?? "metal");
+  const [autoRotate, setAutoRotate] = useState(true);
+
+  // Re-init when navigating between cars
+  useEffect(() => {
+    if (!car) return;
+    const fromUrl = customizationFromSearch(location.search);
+    const fromStore = getCustomization(car.id);
+    setBodyColor(fromUrl.color ?? fromStore?.color ?? car.bodyColor);
+    setFinish(fromUrl.finish ?? fromStore?.finish ?? "gloss");
+    setFlake(fromUrl.flake ?? fromStore?.flake ?? "metal");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [car?.id]);
+
+  // Persist + sync URL whenever selection changes
+  useEffect(() => {
+    if (!car) return;
+    const c = { color: bodyColor, finish, flake };
+    saveCustomization(car.id, c);
+    const qs = customizationToQuery(c);
+    navigate(`${location.pathname}?${qs}`, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bodyColor, finish, flake, car?.id]);
 
   if (!car) {
     return (
@@ -64,6 +116,17 @@ const CarDetail = () => {
     { icon: Cog, label: "Drivetrain", value: car.specs.drivetrain },
   ];
 
+  const handleShare = async () => {
+    const qs = customizationToQuery({ color: bodyColor, finish, flake });
+    const url = `${window.location.origin}${location.pathname}?${qs}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      toast({ title: "Link copied", description: "Share it — they'll see this exact color." });
+    } catch {
+      toast({ title: "Share link", description: url });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <BMWHeader />
@@ -85,6 +148,8 @@ const CarDetail = () => {
                 accentColor={car.accentColor}
                 bodyType={car.bodyType}
                 autoRotate={autoRotate}
+                finish={finish}
+                flake={flake}
                 className="absolute inset-0"
               />
               <button
@@ -95,7 +160,7 @@ const CarDetail = () => {
               </button>
               <div className="absolute bottom-3 left-3 right-3 flex justify-between text-[10px] uppercase tracking-widest text-muted-foreground pointer-events-none">
                 <span>Interactive 3D · drag to rotate · scroll to zoom</span>
-                <span>{car.bodyType}</span>
+                <span>{finish} · {flake}</span>
               </div>
             </div>
 
@@ -121,7 +186,7 @@ const CarDetail = () => {
               </div>
 
               {/* Paint customizer */}
-              <div className="mb-8 p-5 bg-card border border-border rounded-lg">
+              <div className="mb-6 p-5 bg-card border border-border rounded-lg">
                 <div className="flex items-center justify-between mb-4">
                   <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
                     Exterior Paint
@@ -169,6 +234,62 @@ const CarDetail = () => {
                 </label>
               </div>
 
+              {/* Finish + Flake */}
+              <div className="mb-8 grid sm:grid-cols-2 gap-4">
+                <div className="p-5 bg-card border border-border rounded-lg">
+                  <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-3">
+                    Finish
+                  </p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {FINISH_OPTIONS.map((opt) => {
+                      const active = finish === opt.value;
+                      return (
+                        <button
+                          key={opt.value}
+                          onClick={() => setFinish(opt.value)}
+                          className={`text-left rounded-md border px-3 py-2 transition-all ${
+                            active
+                              ? "border-bmw-blue bg-bmw-blue/10 text-foreground"
+                              : "border-border text-muted-foreground hover:text-foreground hover:border-bmw-blue/40"
+                          }`}
+                        >
+                          <p className="text-sm font-medium">{opt.label}</p>
+                          <p className="text-[10px] uppercase tracking-wider opacity-70">
+                            {opt.hint}
+                          </p>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="p-5 bg-card border border-border rounded-lg">
+                  <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-3">
+                    Effect
+                  </p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {FLAKE_OPTIONS.map((opt) => {
+                      const active = flake === opt.value;
+                      return (
+                        <button
+                          key={opt.value}
+                          onClick={() => setFlake(opt.value)}
+                          className={`text-left rounded-md border px-3 py-2 transition-all ${
+                            active
+                              ? "border-bmw-blue bg-bmw-blue/10 text-foreground"
+                              : "border-border text-muted-foreground hover:text-foreground hover:border-bmw-blue/40"
+                          }`}
+                        >
+                          <p className="text-sm font-medium">{opt.label}</p>
+                          <p className="text-[10px] uppercase tracking-wider opacity-70">
+                            {opt.hint}
+                          </p>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
 
               <div className="flex flex-wrap gap-3">
                 <button className="px-6 py-3 bg-bmw-blue text-primary-foreground rounded-md font-medium hover:opacity-90 transition glow-blue">
@@ -176,6 +297,12 @@ const CarDetail = () => {
                 </button>
                 <button className="px-6 py-3 border border-border rounded-md font-medium hover:border-bmw-blue hover:text-bmw-blue transition">
                   Schedule Test Drive
+                </button>
+                <button
+                  onClick={handleShare}
+                  className="px-6 py-3 border border-border rounded-md font-medium inline-flex items-center gap-2 hover:border-bmw-blue hover:text-bmw-blue transition"
+                >
+                  <Share2 size={16} /> Share this color
                 </button>
               </div>
             </div>
@@ -233,12 +360,8 @@ const CarDetail = () => {
                     to={`/models/${r.id}`}
                     className="group bg-card border border-border rounded-lg overflow-hidden hover:border-bmw-blue/50 transition-all hover:-translate-y-1"
                   >
-                    <div className="aspect-[4/3] overflow-hidden">
-                      <img
-                        src={r.image}
-                        alt={r.name}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                      />
+                    <div className="aspect-[4/3] overflow-hidden bg-black">
+                      <CarThumb car={r} className="w-full h-full" />
                     </div>
                     <div className="p-5">
                       <h3 className="font-heading text-lg font-semibold mb-1">{r.name}</h3>

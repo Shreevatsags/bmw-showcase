@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import BMWHeader from "@/components/BMWHeader";
 import BMWFooter from "@/components/BMWFooter";
 import ScrollReveal from "@/components/ScrollReveal";
+import CarThumb from "@/components/CarThumb";
 import { cars, CarCategory } from "@/data/cars";
 import { ArrowRight } from "lucide-react";
 
@@ -69,14 +70,9 @@ const Models = () => {
                   to={`/models/${car.id}`}
                   className="group block bg-card rounded-lg overflow-hidden border border-border hover:border-bmw-blue/50 transition-all duration-500 hover:-translate-y-1 hover:glow-blue"
                 >
-                  <div className="aspect-[4/3] overflow-hidden relative">
-                    <img
-                      src={car.image}
-                      alt={car.name}
-                      loading="lazy"
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                    />
-                    <div className="absolute top-3 left-3 bg-background/70 backdrop-blur-md text-xs uppercase tracking-wider px-2 py-1 rounded">
+                  <div className="aspect-[4/3] overflow-hidden relative bg-black">
+                    <CarThumb car={car} className="absolute inset-0" />
+                    <div className="absolute top-3 left-3 bg-background/70 backdrop-blur-md text-xs uppercase tracking-wider px-2 py-1 rounded z-10">
                       {car.category}
                     </div>
                   </div>

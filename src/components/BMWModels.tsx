@@ -1,32 +1,20 @@
 import { Link } from "react-router-dom";
-import suvImage from "@/assets/bmw-suv.jpg";
-import coupeImage from "@/assets/bmw-coupe.jpg";
-import electricImage from "@/assets/bmw-electric.jpg";
 import ScrollReveal from "@/components/ScrollReveal";
+import CarThumb from "@/components/CarThumb";
+import { getCar } from "@/data/cars";
 
-const models = [
-  {
-    id: "x5",
-    name: "BMW X5",
-    category: "Sports Activity Vehicle",
-    image: suvImage,
-    price: "From $65,200",
-  },
-  {
-    id: "m4",
-    name: "BMW M4",
-    category: "Performance Coupé",
-    image: coupeImage,
-    price: "From $84,100",
-  },
-  {
-    id: "i5",
-    name: "BMW i5",
-    category: "Electric Sedan",
-    image: electricImage,
-    price: "From $66,800",
-  },
-];
+const FEATURED_IDS = ["x5", "m4", "i5"] as const;
+
+const models = FEATURED_IDS
+  .map((id) => getCar(id))
+  .filter((c): c is NonNullable<ReturnType<typeof getCar>> => !!c)
+  .map((c) => ({
+    id: c.id,
+    name: c.name,
+    category: c.tagline,
+    car: c,
+    price: `From $${c.price.toLocaleString()}`,
+  }));
 
 const BMWModels = () => {
   return (
@@ -51,16 +39,9 @@ const BMWModels = () => {
                 to={`/models/${model.id}`}
                 className="group relative block bg-card rounded-lg overflow-hidden border border-border hover:border-bmw-blue/40 transition-all duration-500 hover:glow-blue hover:-translate-y-1"
               >
-                <div className="aspect-[4/3] overflow-hidden">
-                  <img
-                    src={model.image}
-                    alt={model.name}
-                    loading="lazy"
-                    width={800}
-                    height={600}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-                  />
-                  <div className="absolute inset-0 bg-bmw-blue/0 group-hover:bg-bmw-blue/10 transition-colors duration-500" />
+                <div className="aspect-[4/3] overflow-hidden relative bg-black">
+                  <CarThumb car={model.car} className="absolute inset-0" />
+                  <div className="absolute inset-0 bg-bmw-blue/0 group-hover:bg-bmw-blue/10 transition-colors duration-500 pointer-events-none" />
                 </div>
                 <div className="p-6">
                   <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1 transition-colors duration-300 group-hover:text-bmw-blue/70">

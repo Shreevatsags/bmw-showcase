@@ -185,18 +185,7 @@ Then include:
 
 ---
 
-## ⚠️ Disclaimer
-
-This project is developed for educational and portfolio purposes only.
-
-BMW and all associated trademarks, logos, and vehicle names belong to Bayerische Motoren Werke AG (BMW). This project is not affiliated with, endorsed by, or sponsored by BMW.
-
----
-
 ## 👨‍💻 Author
 
 **Shreevatsa S**
 
-GitHub: https://github.com/Shreevatsags
-
-*"The Ultimate Driving Machine, Reimagined on the Web."*

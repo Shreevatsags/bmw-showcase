@@ -125,32 +125,6 @@ Custom hero animations create an engaging first impression inspired by BMW's per
 
 ---
 
-## 📸 Screenshots
-
-Add screenshots inside:
-
-```text
-/public/screenshots/
-```
-
-Then include:
-
-```md
-## Home Page
-
-![Home](public/screenshots/home.png)
-
-## Featured Models
-
-![Models](public/screenshots/models.png)
-
-## Hero Section
-
-![Hero](public/screenshots/hero.png)
-```
-
----
-
 ## 🏎 Featured BMW Models
 
 * BMW M4 Competition

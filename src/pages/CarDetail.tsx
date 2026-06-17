@@ -1,6 +1,6 @@
 import { Link, useParams, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect, useMemo } from "react";
-import { ArrowLeft, Gauge, Zap, Timer, Users, Cog, Wrench, Check, Share2 } from "lucide-react";
+import { ArrowLeft, Gauge, Zap, Timer, Users, Cog, Wrench, Check, Share2, GitCompareArrows } from "lucide-react";
 import BMWHeader from "@/components/BMWHeader";
 import BMWFooter from "@/components/BMWFooter";
 import Car3D from "@/components/Car3D";
@@ -15,6 +15,8 @@ import {
   type Finish,
   type Flake,
 } from "@/lib/carCustomization";
+import { COMPARE_MAX, getCompare, subscribeCompare, toggleCompare } from "@/lib/compare";
+import { pushRecentlyViewed } from "@/lib/recentlyViewed";
 import { toast } from "@/hooks/use-toast";
 
 const formatPrice = (n: number) =>

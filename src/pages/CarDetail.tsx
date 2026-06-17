@@ -316,6 +316,28 @@ const CarDetail = () => {
                 >
                   <Share2 size={16} /> Share this color
                 </button>
+                {car && (() => {
+                  const inCompare = compareIds.includes(car.id);
+                  return (
+                    <button
+                      onClick={() => {
+                        const res = toggleCompare(car.id);
+                        if (res.full) {
+                          toast({ title: "Compare list full", description: `Max ${COMPARE_MAX} models.` });
+                          return;
+                        }
+                        toast({ title: res.added ? `Added ${car.name} to compare` : `Removed from compare` });
+                      }}
+                      className={`px-6 py-3 rounded-md font-medium inline-flex items-center gap-2 transition border ${
+                        inCompare
+                          ? "border-bmw-blue text-bmw-blue bg-bmw-blue/10"
+                          : "border-border hover:border-bmw-blue hover:text-bmw-blue"
+                      }`}
+                    >
+                      <GitCompareArrows size={16} /> {inCompare ? "In compare" : "Add to compare"}
+                    </button>
+                  );
+                })()}
               </div>
             </div>
           </div>

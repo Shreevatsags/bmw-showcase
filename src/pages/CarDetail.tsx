@@ -68,6 +68,16 @@ const CarDetail = () => {
   const [finish, setFinish] = useState<Finish>(initial?.finish ?? "gloss");
   const [flake, setFlake] = useState<Flake>(initial?.flake ?? "metal");
   const [autoRotate, setAutoRotate] = useState(true);
+  const [compareIds, setCompareIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    setCompareIds(getCompare());
+    return subscribeCompare(setCompareIds);
+  }, []);
+
+  useEffect(() => {
+    if (car?.id) pushRecentlyViewed(car.id);
+  }, [car?.id]);
 
   // Re-init when navigating between cars
   useEffect(() => {

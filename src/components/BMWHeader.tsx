@@ -1,16 +1,23 @@
-import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Menu, X, GitCompareArrows } from "lucide-react";
 import { Link } from "react-router-dom";
+import { getCompare, subscribeCompare } from "@/lib/compare";
 
 const navItems: { label: string; to: string }[] = [
   { label: "Models", to: "/models" },
   { label: "Electric", to: "/models?cat=Electric" },
   { label: "Performance", to: "/models?cat=M%20Performance" },
-  { label: "Experience", to: "/#experience" },
+  { label: "Compare", to: "/compare" },
 ];
 
 const BMWHeader = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [compareCount, setCompareCount] = useState(0);
+
+  useEffect(() => {
+    setCompareCount(getCompare().length);
+    return subscribeCompare((ids) => setCompareCount(ids.length));
+  }, []);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
@@ -31,13 +38,28 @@ const BMWHeader = () => {
           ))}
         </nav>
 
-        <button
-          className="md:hidden text-foreground"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Toggle menu"
-        >
-          {menuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+        <div className="flex items-center gap-3">
+          <Link
+            to="/compare"
+            className="relative inline-flex items-center gap-1.5 text-xs uppercase tracking-wider border border-border rounded-md px-3 py-1.5 hover:border-bmw-blue hover:text-bmw-blue transition-colors"
+          >
+            <GitCompareArrows size={14} />
+            <span className="hidden sm:inline">Compare</span>
+            {compareCount > 0 && (
+              <span className="ml-1 inline-flex items-center justify-center min-w-[18px] h-[18px] text-[10px] rounded-full bg-bmw-blue text-primary-foreground px-1">
+                {compareCount}
+              </span>
+            )}
+          </Link>
+
+          <button
+            className="md:hidden text-foreground"
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="Toggle menu"
+          >
+            {menuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
       </div>
 
       {menuOpen && (
@@ -59,4 +81,3 @@ const BMWHeader = () => {
 };
 
 export default BMWHeader;
-

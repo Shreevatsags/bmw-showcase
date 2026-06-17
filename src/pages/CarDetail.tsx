@@ -1,6 +1,6 @@
 import { Link, useParams, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect, useMemo } from "react";
-import { ArrowLeft, Gauge, Zap, Timer, Users, Cog, Wrench, Check, Share2 } from "lucide-react";
+import { ArrowLeft, Gauge, Zap, Timer, Users, Cog, Wrench, Check, Share2, GitCompareArrows } from "lucide-react";
 import BMWHeader from "@/components/BMWHeader";
 import BMWFooter from "@/components/BMWFooter";
 import Car3D from "@/components/Car3D";
@@ -15,6 +15,8 @@ import {
   type Finish,
   type Flake,
 } from "@/lib/carCustomization";
+import { COMPARE_MAX, getCompare, subscribeCompare, toggleCompare } from "@/lib/compare";
+import { pushRecentlyViewed } from "@/lib/recentlyViewed";
 import { toast } from "@/hooks/use-toast";
 
 const formatPrice = (n: number) =>
@@ -66,6 +68,16 @@ const CarDetail = () => {
   const [finish, setFinish] = useState<Finish>(initial?.finish ?? "gloss");
   const [flake, setFlake] = useState<Flake>(initial?.flake ?? "metal");
   const [autoRotate, setAutoRotate] = useState(true);
+  const [compareIds, setCompareIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    setCompareIds(getCompare());
+    return subscribeCompare(setCompareIds);
+  }, []);
+
+  useEffect(() => {
+    if (car?.id) pushRecentlyViewed(car.id);
+  }, [car?.id]);
 
   // Re-init when navigating between cars
   useEffect(() => {
@@ -304,6 +316,28 @@ const CarDetail = () => {
                 >
                   <Share2 size={16} /> Share this color
                 </button>
+                {car && (() => {
+                  const inCompare = compareIds.includes(car.id);
+                  return (
+                    <button
+                      onClick={() => {
+                        const res = toggleCompare(car.id);
+                        if (res.full) {
+                          toast({ title: "Compare list full", description: `Max ${COMPARE_MAX} models.` });
+                          return;
+                        }
+                        toast({ title: res.added ? `Added ${car.name} to compare` : `Removed from compare` });
+                      }}
+                      className={`px-6 py-3 rounded-md font-medium inline-flex items-center gap-2 transition border ${
+                        inCompare
+                          ? "border-bmw-blue text-bmw-blue bg-bmw-blue/10"
+                          : "border-border hover:border-bmw-blue hover:text-bmw-blue"
+                      }`}
+                    >
+                      <GitCompareArrows size={16} /> {inCompare ? "In compare" : "Add to compare"}
+                    </button>
+                  );
+                })()}
               </div>
             </div>
           </div>

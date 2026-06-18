@@ -1,11 +1,12 @@
 import { Link, useParams, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect, useMemo } from "react";
-import { ArrowLeft, Gauge, Zap, Timer, Users, Cog, Wrench, Check, Share2, GitCompareArrows } from "lucide-react";
+import { ArrowLeft, Gauge, Zap, Timer, Users, Cog, Wrench, Check, Share2, GitCompareArrows, Heart, CalendarDays } from "lucide-react";
 import BMWHeader from "@/components/BMWHeader";
 import BMWFooter from "@/components/BMWFooter";
 import Car3D from "@/components/Car3D";
 import ScrollReveal from "@/components/ScrollReveal";
 import CarThumb from "@/components/CarThumb";
+import TestDriveDialog from "@/components/TestDriveDialog";
 import { getCar, cars } from "@/data/cars";
 import {
   customizationFromSearch,
@@ -17,6 +18,8 @@ import {
 } from "@/lib/carCustomization";
 import { COMPARE_MAX, getCompare, subscribeCompare, toggleCompare } from "@/lib/compare";
 import { pushRecentlyViewed } from "@/lib/recentlyViewed";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
 const formatPrice = (n: number) =>

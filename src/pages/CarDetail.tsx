@@ -322,12 +322,45 @@ const CarDetail = () => {
               </div>
 
               <div className="flex flex-wrap gap-3">
-                <button className="px-6 py-3 bg-bmw-blue text-primary-foreground rounded-md font-medium hover:opacity-90 transition glow-blue">
-                  Build Yours
+                <button
+                  disabled={garageBusy}
+                  onClick={async () => {
+                    if (!user) { navigate("/auth"); return; }
+                    setGarageBusy(true);
+                    if (inGarage) {
+                      const { error } = await supabase
+                        .from("garage").delete()
+                        .eq("user_id", user.id).eq("car_id", car.id);
+                      if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+                      else { setInGarage(false); toast({ title: "Removed from garage" }); }
+                    } else {
+                      const { error } = await supabase.from("garage").insert({
+                        user_id: user.id, car_id: car.id,
+                        color: bodyColor, finish, flake,
+                      });
+                      if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+                      else { setInGarage(true); toast({ title: `Saved ${car.name} to your garage` }); }
+                    }
+                    setGarageBusy(false);
+                  }}
+                  className={`px-6 py-3 rounded-md font-medium inline-flex items-center gap-2 transition ${
+                    inGarage
+                      ? "bg-bmw-blue text-primary-foreground glow-blue"
+                      : "border border-border hover:border-bmw-blue hover:text-bmw-blue"
+                  }`}
+                >
+                  <Heart size={16} className={inGarage ? "fill-current" : ""} />
+                  {inGarage ? "In your garage" : "Save to garage"}
                 </button>
-                <button className="px-6 py-3 border border-border rounded-md font-medium hover:border-bmw-blue hover:text-bmw-blue transition">
-                  Schedule Test Drive
-                </button>
+                <TestDriveDialog
+                  car={car}
+                  trigger={
+                    <button className="px-6 py-3 border border-border rounded-md font-medium inline-flex items-center gap-2 hover:border-bmw-blue hover:text-bmw-blue transition">
+                      <CalendarDays size={16} /> Schedule Test Drive
+                    </button>
+                  }
+                />
+
                 <button
                   onClick={handleShare}
                   className="px-6 py-3 border border-border rounded-md font-medium inline-flex items-center gap-2 hover:border-bmw-blue hover:text-bmw-blue transition"

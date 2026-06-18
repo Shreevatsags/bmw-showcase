@@ -72,11 +72,26 @@ const CarDetail = () => {
   const [flake, setFlake] = useState<Flake>(initial?.flake ?? "metal");
   const [autoRotate, setAutoRotate] = useState(true);
   const [compareIds, setCompareIds] = useState<string[]>([]);
+  const { user } = useAuth();
+  const [inGarage, setInGarage] = useState(false);
+  const [garageBusy, setGarageBusy] = useState(false);
 
   useEffect(() => {
     setCompareIds(getCompare());
     return subscribeCompare(setCompareIds);
   }, []);
+
+  // Check whether this car is already in the user's garage
+  useEffect(() => {
+    if (!user || !car) { setInGarage(false); return; }
+    supabase
+      .from("garage")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("car_id", car.id)
+      .maybeSingle()
+      .then(({ data }) => setInGarage(!!data));
+  }, [user, car?.id]);
 
   useEffect(() => {
     if (car?.id) pushRecentlyViewed(car.id);

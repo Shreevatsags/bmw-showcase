@@ -1,7 +1,16 @@
 import { useEffect, useState } from "react";
-import { Menu, X, GitCompareArrows } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Menu, X, GitCompareArrows, User as UserIcon, LogOut, Car as CarIcon, Shield } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { getCompare, subscribeCompare } from "@/lib/compare";
+import { useAuth } from "@/hooks/useAuth";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const navItems: { label: string; to: string }[] = [
   { label: "Models", to: "/models" },
@@ -11,6 +20,8 @@ const navItems: { label: string; to: string }[] = [
 ];
 
 const BMWHeader = () => {
+  const navigate = useNavigate();
+  const { user, isAdmin, signOut } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [compareCount, setCompareCount] = useState(0);
 
@@ -18,6 +29,9 @@ const BMWHeader = () => {
     setCompareCount(getCompare().length);
     return subscribeCompare((ids) => setCompareCount(ids.length));
   }, []);
+
+  const initials = (user?.user_metadata?.full_name || user?.email || "?")
+    .split(/[\s@]/).filter(Boolean).slice(0, 2).map((s: string) => s[0]?.toUpperCase()).join("");
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
@@ -52,6 +66,40 @@ const BMWHeader = () => {
             )}
           </Link>
 
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger className="w-9 h-9 rounded-full bg-gradient-to-br from-bmw-blue to-bmw-blue/40 flex items-center justify-center text-xs font-semibold text-primary-foreground hover:scale-105 transition-transform">
+                {initials || <UserIcon size={16} />}
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56 bg-card border-border">
+                <DropdownMenuLabel className="font-normal">
+                  <p className="text-sm font-medium truncate">{user.user_metadata?.full_name ?? user.email}</p>
+                  <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => navigate("/garage")}>
+                  <CarIcon size={14} className="mr-2" /> My Garage
+                </DropdownMenuItem>
+                {isAdmin && (
+                  <DropdownMenuItem onClick={() => navigate("/admin")}>
+                    <Shield size={14} className="mr-2" /> Admin
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={async () => { await signOut(); navigate("/"); }}>
+                  <LogOut size={14} className="mr-2" /> Sign out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Link
+              to="/auth"
+              className="hidden sm:inline-flex items-center text-xs uppercase tracking-wider border border-border rounded-md px-3 py-1.5 hover:border-bmw-blue hover:text-bmw-blue transition-colors"
+            >
+              Sign in
+            </Link>
+          )}
+
           <button
             className="md:hidden text-foreground"
             onClick={() => setMenuOpen(!menuOpen)}
@@ -74,6 +122,11 @@ const BMWHeader = () => {
               {item.label}
             </Link>
           ))}
+          {!user && (
+            <Link to="/auth" onClick={() => setMenuOpen(false)} className="text-sm font-medium text-bmw-blue">
+              Sign in
+            </Link>
+          )}
         </nav>
       )}
     </header>

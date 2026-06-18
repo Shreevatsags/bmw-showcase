@@ -1,11 +1,12 @@
 import { Link, useParams, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect, useMemo } from "react";
-import { ArrowLeft, Gauge, Zap, Timer, Users, Cog, Wrench, Check, Share2, GitCompareArrows } from "lucide-react";
+import { ArrowLeft, Gauge, Zap, Timer, Users, Cog, Wrench, Check, Share2, GitCompareArrows, Heart, CalendarDays } from "lucide-react";
 import BMWHeader from "@/components/BMWHeader";
 import BMWFooter from "@/components/BMWFooter";
 import Car3D from "@/components/Car3D";
 import ScrollReveal from "@/components/ScrollReveal";
 import CarThumb from "@/components/CarThumb";
+import TestDriveDialog from "@/components/TestDriveDialog";
 import { getCar, cars } from "@/data/cars";
 import {
   customizationFromSearch,
@@ -17,6 +18,8 @@ import {
 } from "@/lib/carCustomization";
 import { COMPARE_MAX, getCompare, subscribeCompare, toggleCompare } from "@/lib/compare";
 import { pushRecentlyViewed } from "@/lib/recentlyViewed";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
 const formatPrice = (n: number) =>
@@ -69,11 +72,26 @@ const CarDetail = () => {
   const [flake, setFlake] = useState<Flake>(initial?.flake ?? "metal");
   const [autoRotate, setAutoRotate] = useState(true);
   const [compareIds, setCompareIds] = useState<string[]>([]);
+  const { user } = useAuth();
+  const [inGarage, setInGarage] = useState(false);
+  const [garageBusy, setGarageBusy] = useState(false);
 
   useEffect(() => {
     setCompareIds(getCompare());
     return subscribeCompare(setCompareIds);
   }, []);
+
+  // Check whether this car is already in the user's garage
+  useEffect(() => {
+    if (!user || !car) { setInGarage(false); return; }
+    supabase
+      .from("garage")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("car_id", car.id)
+      .maybeSingle()
+      .then(({ data }) => setInGarage(!!data));
+  }, [user, car?.id]);
 
   useEffect(() => {
     if (car?.id) pushRecentlyViewed(car.id);
@@ -304,12 +322,45 @@ const CarDetail = () => {
               </div>
 
               <div className="flex flex-wrap gap-3">
-                <button className="px-6 py-3 bg-bmw-blue text-primary-foreground rounded-md font-medium hover:opacity-90 transition glow-blue">
-                  Build Yours
+                <button
+                  disabled={garageBusy}
+                  onClick={async () => {
+                    if (!user) { navigate("/auth"); return; }
+                    setGarageBusy(true);
+                    if (inGarage) {
+                      const { error } = await supabase
+                        .from("garage").delete()
+                        .eq("user_id", user.id).eq("car_id", car.id);
+                      if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+                      else { setInGarage(false); toast({ title: "Removed from garage" }); }
+                    } else {
+                      const { error } = await supabase.from("garage").insert({
+                        user_id: user.id, car_id: car.id,
+                        color: bodyColor, finish, flake,
+                      });
+                      if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+                      else { setInGarage(true); toast({ title: `Saved ${car.name} to your garage` }); }
+                    }
+                    setGarageBusy(false);
+                  }}
+                  className={`px-6 py-3 rounded-md font-medium inline-flex items-center gap-2 transition ${
+                    inGarage
+                      ? "bg-bmw-blue text-primary-foreground glow-blue"
+                      : "border border-border hover:border-bmw-blue hover:text-bmw-blue"
+                  }`}
+                >
+                  <Heart size={16} className={inGarage ? "fill-current" : ""} />
+                  {inGarage ? "In your garage" : "Save to garage"}
                 </button>
-                <button className="px-6 py-3 border border-border rounded-md font-medium hover:border-bmw-blue hover:text-bmw-blue transition">
-                  Schedule Test Drive
-                </button>
+                <TestDriveDialog
+                  car={car}
+                  trigger={
+                    <button className="px-6 py-3 border border-border rounded-md font-medium inline-flex items-center gap-2 hover:border-bmw-blue hover:text-bmw-blue transition">
+                      <CalendarDays size={16} /> Schedule Test Drive
+                    </button>
+                  }
+                />
+
                 <button
                   onClick={handleShare}
                   className="px-6 py-3 border border-border rounded-md font-medium inline-flex items-center gap-2 hover:border-bmw-blue hover:text-bmw-blue transition"
